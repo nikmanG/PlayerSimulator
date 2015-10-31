@@ -8,12 +8,16 @@
     <name>PlayerSimulator</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <plugin.name>${project.name}</plugin.name>
+        <plugin.version>${project.version}</plugin.version>
+        <plugin.author>scholzi100</plugin.author>
+        <plugin.main>com.probablycoding.bukkit.playersimulator.PlayerSimulator</plugin.main>
     </properties>
     <dependencies>
         <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>craftbukkit</artifactId>
-            <version>1.7.10-R0.1-SNAPSHOT</version>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot</artifactId>
+            <version>1.8.8-R0.1-SNAPSHOT</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
@@ -25,14 +29,9 @@
         </repository>
     </repositories>
 
-    <pluginRepositories>
-        <pluginRepository>
-            <id>bukkit-plugins</id>
-            <url>http://repo.bukkit.org/content/groups/public</url>
-        </pluginRepository>
-    </pluginRepositories>
+
     <description>Simulates players for load testing</description>
-    <url>https://github.com/amaranth/PlayerSimulator</url>
+    <url>https://github.com/scholzi100/PlayerSimulator</url>
     <build>
         <defaultGoal>clean install</defaultGoal>
         <resources>
@@ -59,8 +58,8 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>2.0.2</version>
                     <configuration>
-                        <source>1.5</source>
-                        <target>1.5</target>
+                        <source>1.8</source>
+                        <target>1.8</target>
                     </configuration>
                 </plugin>
             </plugins>

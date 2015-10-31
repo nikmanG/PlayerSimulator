@@ -1,20 +1,17 @@
 package com.probablycoding.bukkit.playersimulator;
 
-import net.minecraft.server.v1_7_R4.EntityPlayer;
-import net.minecraft.server.v1_7_R4.PlayerInteractManager;
-import net.minecraft.server.v1_7_R4.PlayerList;
-import net.minecraft.server.v1_7_R4.WorldServer;
-import net.minecraft.util.com.google.common.base.Charsets;
-import net.minecraft.util.com.mojang.authlib.GameProfile;
-
-import org.bukkit.craftbukkit.v1_7_R4.CraftServer;
-import org.bukkit.craftbukkit.v1_7_R4.CraftWorld;
-
+import com.google.common.base.Charsets;
+import com.mojang.authlib.GameProfile;
+import net.minecraft.server.v1_8_R3.EntityPlayer;
+import net.minecraft.server.v1_8_R3.PlayerList;
+import net.minecraft.server.v1_8_R3.WorldServer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.event.Listener;
+import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Random;
@@ -22,14 +19,14 @@ import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 
-public class PlayerSimulator extends JavaPlugin implements Listener {
+public class PlayerSimulator extends JavaPlugin {
     private TPSCheck tpsCheck = new TPSCheck();
     private boolean toggle = false;
 
     @Override
     public void onEnable() {
         getServer().getScheduler().scheduleSyncRepeatingTask(this, tpsCheck, 20, 20);
-        getServer().getPluginManager().registerEvents(this, this);
+        getServer().getPluginManager().registerEvents(new HidePlayerListener(this), this);
     }
 
     @Override
@@ -57,21 +54,28 @@ public class PlayerSimulator extends JavaPlugin implements Listener {
                 UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(Charsets.UTF_8));
                 GameProfile gameProfile = new GameProfile(uuid, name);
 
-                EntityPlayer entityplayer = new EntityPlayer(playerList.getServer(), world, gameProfile, new PlayerInteractManager(world));
+                EntityPlayer entityplayer = new EntityPlayer(playerList.getServer(), world, gameProfile, new DummyPlayerInteractManager(world));
                 new DummyPlayerConnection(playerList.getServer(), new DummyNetworkManager(), entityplayer);
 
                 entityplayer.spawnIn(world);
                 entityplayer.playerInteractManager.a((WorldServer) entityplayer.world);
                 entityplayer.playerInteractManager.b(world.getWorldData().getGameType());
+                entityplayer.setInvisible(true);
 
                 entityplayer.setPosition(random.nextInt(range * 2) - range, 100, random.nextInt(range * 2) - range);
 
                 playerList.players.add(entityplayer);
                 world.addEntity(entityplayer);
-                playerList.a(entityplayer, null);
+                playerList.a(entityplayer, entityplayer.u());
 
                 sender.sendMessage("Added player " + entityplayer.getName() + ChatColor.RESET + " at " + entityplayer.locX + ", " + entityplayer.locY + ", " + entityplayer.locZ + ".");
             }
+
+            getServer().getOnlinePlayers().forEach(player -> {
+                if (!player.getName().startsWith(ChatColor.BLUE+"Bot")){
+                    hideAllBots(player);
+                }
+            });
 
             return true;
         }
@@ -80,6 +84,11 @@ public class PlayerSimulator extends JavaPlugin implements Listener {
             PlayerList playerList = ((CraftServer) Bukkit.getServer()).getHandle();
             for (EntityPlayer entityplayer : (CopyOnWriteArrayList<EntityPlayer>) playerList.players) {
                 if (entityplayer.getName().startsWith(ChatColor.BLUE + "Bot")) {
+
+                    entityplayer.world.kill(entityplayer);
+                    WorldServer world = (WorldServer) entityplayer.world;
+                    world.getPlayerChunkMap().removePlayer(entityplayer);
+                    playerList.players.remove(entityplayer);
                     entityplayer.playerConnection.disconnect("");
                     sender.sendMessage("Disconnected " + entityplayer.getName());
                 }
@@ -99,4 +108,21 @@ public class PlayerSimulator extends JavaPlugin implements Listener {
         }
         return false;
     }
+
+    public void hideAllBots(Player player){
+        getServer().getOnlinePlayers().forEach(player1 -> {
+            if (player.getName().startsWith(ChatColor.BLUE+"Bot")){
+                player.hidePlayer(player1);
+            }
+        });
+    }
+
+    public void showAllBots(Player player){
+        getServer().getOnlinePlayers().forEach(player1 -> {
+            if (player.getName().startsWith(ChatColor.BLUE+"Bot")){
+                player.showPlayer(player1);
+            }
+        });
+    }
+
 }

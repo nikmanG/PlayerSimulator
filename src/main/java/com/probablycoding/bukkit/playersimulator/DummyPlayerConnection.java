@@ -1,39 +1,13 @@
 package com.probablycoding.bukkit.playersimulator;
 
-import net.minecraft.server.v1_7_R4.EntityPlayer;
-import net.minecraft.server.v1_7_R4.EnumProtocol;
-import net.minecraft.server.v1_7_R4.IChatBaseComponent;
-import net.minecraft.server.v1_7_R4.MinecraftServer;
-import net.minecraft.server.v1_7_R4.NetworkManager;
-import net.minecraft.server.v1_7_R4.Packet;
-import net.minecraft.server.v1_7_R4.PacketPlayInAbilities;
-import net.minecraft.server.v1_7_R4.PacketPlayInArmAnimation;
-import net.minecraft.server.v1_7_R4.PacketPlayInBlockDig;
-import net.minecraft.server.v1_7_R4.PacketPlayInBlockPlace;
-import net.minecraft.server.v1_7_R4.PacketPlayInChat;
-import net.minecraft.server.v1_7_R4.PacketPlayInClientCommand;
-import net.minecraft.server.v1_7_R4.PacketPlayInCloseWindow;
-import net.minecraft.server.v1_7_R4.PacketPlayInCustomPayload;
-import net.minecraft.server.v1_7_R4.PacketPlayInEnchantItem;
-import net.minecraft.server.v1_7_R4.PacketPlayInEntityAction;
-import net.minecraft.server.v1_7_R4.PacketPlayInFlying;
-import net.minecraft.server.v1_7_R4.PacketPlayInHeldItemSlot;
-import net.minecraft.server.v1_7_R4.PacketPlayInKeepAlive;
-import net.minecraft.server.v1_7_R4.PacketPlayInSetCreativeSlot;
-import net.minecraft.server.v1_7_R4.PacketPlayInSettings;
-import net.minecraft.server.v1_7_R4.PacketPlayInSteerVehicle;
-import net.minecraft.server.v1_7_R4.PacketPlayInTabComplete;
-import net.minecraft.server.v1_7_R4.PacketPlayInTransaction;
-import net.minecraft.server.v1_7_R4.PacketPlayInUpdateSign;
-import net.minecraft.server.v1_7_R4.PacketPlayInUseEntity;
-import net.minecraft.server.v1_7_R4.PacketPlayInWindowClick;
-import net.minecraft.server.v1_7_R4.PlayerConnection;
-import net.minecraft.server.v1_7_R4.WorldServer;
+import net.minecraft.server.v1_8_R3.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_7_R4.CraftServer;
-import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+
+import java.util.Set;
 
 public class DummyPlayerConnection extends PlayerConnection {
     private boolean disconnected = false;
@@ -48,20 +22,41 @@ public class DummyPlayerConnection extends PlayerConnection {
     }
 
     @Override
-    public void a() {
-    }
-
-    public NetworkManager b() {
-        return this.networkManager;
+    public NetworkManager a() {
+        return super.networkManager;
     }
 
     public void disconnect(java.lang.String s) {
-        WorldServer worldserver = player.r();
+        WorldServer worldserver = player.u();
 
         worldserver.kill(player);
         worldserver.getPlayerChunkMap().removePlayer(player);
         ((CraftServer) Bukkit.getServer()).getHandle().players.remove(player);
         this.disconnected = true;
+    }
+
+    public boolean isDisconnected() {
+        return disconnected;
+    }
+
+    @Override
+    public void c() {
+
+    }
+
+    @Override
+    public void a(double d0, double d1, double d2, float f, float f1, Set<PacketPlayOutPosition.EnumPlayerTeleportFlags> set) {
+
+    }
+
+    @Override
+    public void a(PacketPlayInSpectate packetplayinspectate) {
+
+    }
+
+    @Override
+    public void a(PacketPlayInResourcePackStatus packetplayinresourcepackstatus) {
+
     }
 
     public void a(PacketPlayInSteerVehicle packetplayinsteervehicle) {

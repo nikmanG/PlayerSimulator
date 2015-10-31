@@ -1,11 +1,8 @@
-name: PlayerSimulator
-version: ${project.version}
-description: ${project.description}
+name: ${plugin.name}
+version: ${plugin.version}
+author: ${plugin.author}
 
-author: Travis Watkins
-website: ${project.url}
-
-main: com.probablycoding.bukkit.playersimulator.PlayerSimulator
+main: ${plugin.main}
 
 commands:
   spawnbot:
